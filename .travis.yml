@@ -1,24 +1,29 @@
-language: java
-jdk:
-  - oraclejdk7
-
-install: true
-script:
-  - "cd modules;mvn clean test"
-  - jdk_switcher use oraclejdk8 
-  - "mvn clean test"
-  - mvn clean package -Dmaven.test.skip=true
-  - jdk_switcher use oraclejdk7
-  - "mvn test"
-  - "mvn clean package -Dmaven.test.skip=true" 
-  - jdk_switcher use oraclejdk7
-  - "mvn test"  
-
+before_install:
+- wget https://dl.dropboxusercontent.com/u/7897865/apache-maven-3.3.9.zip
+- unzip -qq apache-maven-3.3.9.zip
+- export M2_HOME=$PWD/apache-maven-3.3.9
+- export PATH=$M2_HOME/bin:$PATH
 branches:
   only:
-    - master 
-before_install:
-  - wget https://dl.dropboxusercontent.com/u/7897865/apache-maven-3.3.9.zip
-  - unzip -qq apache-maven-3.3.9.zip
-  - export M2_HOME=$PWD/apache-maven-3.3.9
-  - export PATH=$M2_HOME/bin:$PATH
+  - master
+install: true
+jdk:
+- oraclejdk7
+language: java
+notifications:
+  email: false
+  slack:
+    rooms: flakycov:U2MeVOPjdi4up1U793ubeIUZ
+    template:
+    - Build <%{build_url}|#%{build_number}> (<%{compare_url}|%{commit}>) of %{repository}@%{branch} by %{author} %{result} in %{duration}
+    - 'dashbot: %{repository_name} %{build_id}'
+script:
+- cd modules;mvn clean test
+- jdk_switcher use oraclejdk8
+- mvn clean test
+- mvn clean package -Dmaven.test.skip=true
+- jdk_switcher use oraclejdk7
+- mvn test
+- mvn clean package -Dmaven.test.skip=true
+- jdk_switcher use oraclejdk7
+- mvn test
